@@ -1,0 +1,7 @@
+.next
+node_modules
+.taskmaster
+dist
+build
+coverage
+*.log 

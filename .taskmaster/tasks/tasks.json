@@ -1,0 +1,518 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Next.js Project with TypeScript",
+        "description": "Initialize a new Next.js 15+ project with TypeScript, Tailwind CSS, and ESLint/Prettier configuration.",
+        "details": "1. Create a new Next.js project using the App Router: `npx create-next-app@latest taskmaster-ui --typescript --tailwind --eslint`\n2. Configure tsconfig.json for strict type checking\n3. Set up ESLint and Prettier with appropriate rules\n4. Create basic folder structure following Next.js App Router conventions\n5. Configure Tailwind CSS with appropriate color schemes for light/dark mode\n6. Add shadcn/ui as the component library: `npx shadcn-ui@latest init`\n7. Set up basic layout components (RootLayout, etc.)\n8. Configure package.json scripts for development, building, and testing",
+        "testStrategy": "Verify project structure and configuration by running development server and ensuring it starts without errors. Run ESLint to verify code quality configuration.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Basic UI Layout Structure",
+        "description": "Create the foundational UI layout with responsive sidebar, top navigation, and main content area.",
+        "details": "1. Create layout components:\n   - RootLayout: Main container with theme provider\n   - Sidebar: Collapsible sidebar with project selector, filters, tags\n   - TopNav: Search bar, view switcher, settings, help links\n   - MainContent: Container for different views\n2. Implement responsive design using Tailwind CSS\n3. Add dark/light mode toggle using Next.js themes\n4. Create placeholder components for sidebar sections\n5. Implement sidebar collapse/expand functionality\n6. Ensure layout is responsive across mobile, tablet, and desktop breakpoints",
+        "testStrategy": "Test responsive behavior across different viewport sizes. Verify sidebar collapse/expand functionality. Ensure theme switching works correctly between dark and light modes.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Setup State Management with Zustand",
+        "description": "Implement Zustand store for global state management of tasks, UI state, and application settings.",
+        "details": "1. Install Zustand: `npm install zustand`\n2. Create store directory structure\n3. Implement task store with the following slices:\n   - tasksSlice: For managing tasks data\n   - uiSlice: For managing UI state (sidebar open/closed, current view, etc.)\n   - settingsSlice: For app settings (theme, etc.)\n4. Implement selectors for efficient state access\n5. Add TypeScript interfaces for all store types\n6. Create hooks for accessing store state and actions\n7. Implement persistence for settings using zustand/middleware",
+        "testStrategy": "Write unit tests for store actions and selectors. Test state updates and persistence. Verify store initialization with default values.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Store Directory and Install Zustand",
+            "description": "Set up the initial store structure and install Zustand package",
+            "dependencies": [],
+            "details": "Create a 'store' directory in the src folder. Install Zustand using npm: `npm install zustand`. Create index.ts file in the store directory as the main entry point.",
+            "status": "done",
+            "testStrategy": "Verify Zustand installation in package.json and confirm the existence of the store directory structure"
+          },
+          {
+            "id": 2,
+            "title": "Implement Task Store Slice",
+            "description": "Create the tasksSlice for managing tasks data",
+            "dependencies": [
+              1
+            ],
+            "details": "In the store directory, create a tasksSlice.ts file. Implement the tasks state and actions such as addTask, updateTask, deleteTask, and setTasks. Use TypeScript interfaces for task types.",
+            "status": "done",
+            "testStrategy": "Write unit tests for each action in the tasksSlice, ensuring proper state updates"
+          },
+          {
+            "id": 3,
+            "title": "Implement UI and Settings Store Slices",
+            "description": "Create uiSlice for UI state and settingsSlice for app settings",
+            "dependencies": [
+              1
+            ],
+            "details": "Create uiSlice.ts and settingsSlice.ts in the store directory. Implement state and actions for UI (e.g., toggleSidebar, setCurrentView) and settings (e.g., setTheme). Use TypeScript interfaces for all state types.",
+            "status": "done",
+            "testStrategy": "Create unit tests for UI and settings actions, verifying correct state changes"
+          },
+          {
+            "id": 4,
+            "title": "Implement Selectors and Custom Hooks",
+            "description": "Create efficient selectors and custom hooks for accessing store state and actions",
+            "dependencies": [
+              2,
+              3
+            ],
+            "details": "Implement selectors for each slice to optimize state access. Create custom hooks (e.g., useTasks, useUI, useSettings) that utilize these selectors and expose relevant actions. Place hooks in a separate 'hooks' directory.",
+            "status": "done",
+            "testStrategy": "Write tests for selectors and hooks, ensuring they return the correct state and actions"
+          },
+          {
+            "id": 5,
+            "title": "Add Persistence for Settings",
+            "description": "Implement persistence for app settings using zustand/middleware",
+            "dependencies": [
+              3
+            ],
+            "details": "Use zustand/middleware to add persistence for the settings slice. Configure it to store settings in localStorage. Update the main store to incorporate the persisted settings slice. Ensure the app loads persisted settings on startup.",
+            "status": "done",
+            "testStrategy": "Test persistence by changing settings, reloading the app, and verifying that settings are retained"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Implement File System Watcher for tasks.json",
+        "description": "Create a file system watcher to monitor changes to the tasks.json file and update the UI in real-time.",
+        "details": "1. Create Next.js API route for file watching\n2. Implement server-side file watcher using Node.js fs.watch or chokidar\n3. Set up WebSocket connection using Socket.IO or similar library\n4. Emit events when tasks.json changes\n5. Create client-side WebSocket connection handler\n6. Update Zustand store when file change events are received\n7. Implement debouncing to prevent excessive updates\n8. Add error handling for file not found or permission issues",
+        "testStrategy": "Test file watching by modifying tasks.json manually and verifying UI updates. Test error handling by simulating file access issues. Verify WebSocket reconnection on network interruptions.",
+        "priority": "high",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Next.js API route for file watching",
+            "description": "Create a new API route in the Next.js application to handle file watching functionality.",
+            "dependencies": [],
+            "details": "Create a new file in the pages/api directory, implement the API route handler function, and configure it to accept WebSocket connections.",
+            "status": "done",
+            "testStrategy": "Use Jest to create unit tests for the API route, ensuring it properly handles WebSocket connections and responds to requests."
+          },
+          {
+            "id": 2,
+            "title": "Implement server-side file watcher",
+            "description": "Use Node.js fs.watch or chokidar library to monitor changes to the tasks.json file on the server.",
+            "dependencies": [
+              1
+            ],
+            "details": "Set up a file watcher that triggers events when tasks.json is modified, created, or deleted. Implement error handling for file not found or permission issues.",
+            "status": "done",
+            "testStrategy": "Create integration tests using Jest to verify the file watcher correctly detects changes to tasks.json and handles potential errors."
+          },
+          {
+            "id": 3,
+            "title": "Establish WebSocket connection",
+            "description": "Set up a WebSocket connection using Socket.IO or a similar library to enable real-time communication between the server and client.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Initialize Socket.IO on both the server and client sides, implement connection handling, and set up event listeners for file change notifications.",
+            "status": "done",
+            "testStrategy": "Use Jest and a WebSocket testing library to create tests that verify the WebSocket connection is established and maintained correctly."
+          },
+          {
+            "id": 4,
+            "title": "Implement client-side event handling",
+            "description": "Create a client-side handler to process WebSocket events and update the Zustand store when file changes are detected.",
+            "dependencies": [
+              3
+            ],
+            "details": "Implement a WebSocket event listener on the client-side, update the Zustand store with new task data when changes are received, and implement debouncing to prevent excessive updates.",
+            "status": "done",
+            "testStrategy": "Write unit tests using Jest and React Testing Library to ensure the client-side handler correctly processes WebSocket events and updates the Zustand store."
+          },
+          {
+            "id": 5,
+            "title": "Update UI components",
+            "description": "Modify existing UI components to react to changes in the Zustand store and display updated task information in real-time.",
+            "dependencies": [
+              4
+            ],
+            "details": "Update React components to subscribe to the Zustand store, implement re-rendering logic when task data changes, and ensure smooth transitions for updated information.",
+            "status": "done",
+            "testStrategy": "Create component tests using React Testing Library to verify that UI components correctly display updated task information when the Zustand store changes."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Create Task Data Models and API",
+        "description": "Define TypeScript interfaces for task data models and implement API endpoints for CRUD operations.",
+        "details": "1. Create TypeScript interfaces for:\n   - Task\n   - Subtask\n   - TaskStatus\n   - Priority\n   - Tag\n2. Implement Next.js API routes:\n   - GET /api/tasks\n   - GET /api/tasks/:id\n   - PUT /api/tasks/:id\n   - POST /api/tasks\n   - DELETE /api/tasks/:id\n3. Create utility functions for reading/writing tasks.json\n4. Implement validation using zod or similar\n5. Add error handling and appropriate HTTP status codes\n6. Create React Query hooks for data fetching",
+        "testStrategy": "Write unit tests for API endpoints using Jest. Test validation logic with valid and invalid data. Verify proper error handling and status codes.",
+        "priority": "high",
+        "dependencies": [
+          1,
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define TypeScript Interfaces",
+            "description": "Create TypeScript interfaces for Task, Subtask, TaskStatus, Priority, and Tag.",
+            "dependencies": [],
+            "details": "Define clear and comprehensive TypeScript interfaces for all required data models. Ensure proper typing and consider using enums for TaskStatus and Priority.",
+            "status": "done",
+            "testStrategy": "Write unit tests to validate interface structures and constraints."
+          },
+          {
+            "id": 2,
+            "title": "Implement Next.js API Routes",
+            "description": "Create API routes for CRUD operations on tasks.",
+            "dependencies": [
+              1
+            ],
+            "details": "Implement GET /api/tasks, GET /api/tasks/:id, PUT /api/tasks/:id, POST /api/tasks, and DELETE /api/tasks/:id. Ensure proper request handling and response formatting.",
+            "status": "done",
+            "testStrategy": "Use integration tests to verify API endpoint functionality and correct HTTP status codes."
+          },
+          {
+            "id": 3,
+            "title": "Develop Utility Functions",
+            "description": "Create utility functions for reading and writing tasks.json file.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Implement functions to read from and write to the tasks.json file. Include error handling for file operations and data parsing.",
+            "status": "done",
+            "testStrategy": "Write unit tests for utility functions, mocking file system operations."
+          },
+          {
+            "id": 4,
+            "title": "Implement Data Validation",
+            "description": "Add data validation using zod or a similar library.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "Create validation schemas for all data models and implement validation checks in API routes. Ensure proper error messages for validation failures.",
+            "status": "done",
+            "testStrategy": "Develop unit tests for validation schemas and integration tests for API validation."
+          },
+          {
+            "id": 5,
+            "title": "Create React Query Hooks",
+            "description": "Implement React Query hooks for data fetching and management.",
+            "dependencies": [
+              2,
+              4
+            ],
+            "details": "Develop custom hooks using React Query for each API operation. Include proper error handling, loading states, and data caching strategies.",
+            "status": "done",
+            "testStrategy": "Write unit tests for React Query hooks, mocking API calls and testing different scenarios."
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Implement Kanban Board View",
+        "description": "Create the main Kanban board view with columns for different task states and basic card rendering.",
+        "details": "1. Install React DnD or dnd-kit: `npm install react-dnd dnd-kit`\n2. Create KanbanBoard component with column layout\n3. Implement column components for each task state\n4. Create TaskCard component with basic information display\n5. Implement drag and drop context providers\n6. Add column drop targets\n7. Create draggable task cards\n8. Implement basic styling with Tailwind CSS\n9. Add empty state for columns\n10. Ensure responsive layout for different screen sizes",
+        "testStrategy": "Test drag and drop functionality between columns. Verify correct rendering of task information. Test responsive behavior on different screen sizes.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3,
+          5
+        ],
+        "status": "done",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set up Kanban board structure",
+            "description": "Create the basic structure of the Kanban board component with columns for different task states.",
+            "dependencies": [],
+            "details": "1. Create KanbanBoard component\n2. Implement column components for each task state (To Do, In Progress, Done)\n3. Use Tailwind CSS for responsive layout",
+            "status": "done",
+            "testStrategy": "Verify that the board renders correctly with the expected number of columns and responsive design."
+          },
+          {
+            "id": 2,
+            "title": "Implement TaskCard component",
+            "description": "Create a reusable TaskCard component to display basic task information.",
+            "dependencies": [
+              1
+            ],
+            "details": "1. Design TaskCard component with title, description, and other relevant task details\n2. Implement basic styling using Tailwind CSS\n3. Ensure the card is responsive and fits well within columns",
+            "status": "done",
+            "testStrategy": "Test TaskCard component with various task data to ensure correct rendering and responsiveness."
+          },
+          {
+            "id": 3,
+            "title": "Set up drag and drop functionality",
+            "description": "Implement drag and drop functionality for task cards using React DnD or dnd-kit.",
+            "dependencies": [
+              1,
+              2
+            ],
+            "details": "1. Install chosen library (React DnD or dnd-kit)\n2. Set up drag and drop context providers\n3. Implement drag sources for TaskCard components\n4. Add drop targets for column components",
+            "status": "done",
+            "testStrategy": "Verify that task cards can be dragged and dropped between columns, updating their state accordingly."
+          },
+          {
+            "id": 4,
+            "title": "Implement data management and state updates",
+            "description": "Create a system to manage task data and update state when cards are moved between columns.",
+            "dependencies": [
+              3
+            ],
+            "details": "1. Implement a state management solution (e.g., React Context or Redux)\n2. Create functions to update task states when moved between columns\n3. Ensure data persistence across drag and drop operations",
+            "status": "done",
+            "testStrategy": "Test various scenarios of moving tasks between columns and verify that the state updates correctly."
+          },
+          {
+            "id": 5,
+            "title": "Add final touches and optimizations",
+            "description": "Implement additional features, optimize performance, and ensure a polished user experience.",
+            "dependencies": [
+              4
+            ],
+            "details": "1. Add empty state for columns when no tasks are present\n2. Implement loading states and error handling\n3. Optimize rendering performance for large numbers of tasks\n4. Add animations for smoother drag and drop interactions",
+            "status": "done",
+            "testStrategy": "Conduct user testing to ensure smooth operation, good performance with many tasks, and intuitive user experience."
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Implement Task Card Component",
+        "description": "Create detailed task card component with all required information and styling.",
+        "details": "1. Design TaskCard component with:\n   - Task ID and title\n   - Description preview (truncated)\n   - Priority indicator (color-coded)\n   - Dependency indicators\n   - Subtask progress bar/counter\n   - Status badge\n2. Implement hover effects and focus states\n3. Add accessibility attributes\n4. Create skeleton loader for loading states\n5. Implement error state for failed data loading\n6. Add click handler to open task details\n7. Style with Tailwind CSS following design requirements",
+        "testStrategy": "Test rendering with different task data. Verify accessibility using axe or similar tools. Test keyboard navigation and focus management.",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          6
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Drag and Drop Functionality",
+        "description": "Enhance the Kanban board with full drag and drop functionality to move tasks between states.",
+        "details": "1. Implement drag source for TaskCard\n2. Create drop targets for columns\n3. Add drag preview with custom styling\n4. Implement drag start/end animations\n5. Create drag handlers to update task status\n6. Add API calls to update task status on drop\n7. Implement optimistic UI updates\n8. Add error handling and rollback for failed API calls\n9. Ensure smooth animations (60fps)\n10. Add touch support for mobile devices",
+        "testStrategy": "Test drag and drop on different devices (desktop, mobile). Verify API calls are made with correct data. Test error scenarios and rollback functionality.",
+        "priority": "high",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Create Task Detail Modal/Sidebar",
+        "description": "Implement a detailed task view that appears when a task card is clicked, showing all task information and allowing edits.",
+        "details": "1. Create TaskDetail component with:\n   - Full task information display\n   - Edit forms for all fields\n   - Subtask management interface\n   - Dependency management\n   - Status and priority controls\n2. Implement as modal or slide-in sidebar\n3. Add form validation\n4. Create save/cancel buttons\n5. Implement API integration for updates\n6. Add loading and error states\n7. Ensure keyboard accessibility\n8. Implement focus trapping for modal",
+        "testStrategy": "Test form validation with valid and invalid inputs. Verify API calls on save. Test keyboard navigation and accessibility. Ensure focus management works correctly.",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement Subtask Management",
+        "description": "Create functionality to view, add, edit, and delete subtasks within the task detail view.",
+        "details": "1. Create SubtaskList component\n2. Implement SubtaskItem component with:\n   - Title and description\n   - Status toggle\n   - Edit/delete controls\n3. Add form for creating new subtasks\n4. Implement API integration for subtask CRUD operations\n5. Add validation for subtask data\n6. Create progress indicator for parent task\n7. Implement optimistic UI updates\n8. Add error handling and rollback",
+        "testStrategy": "Test subtask CRUD operations. Verify parent task progress updates correctly. Test validation and error handling.",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Task Dependency Visualization",
+        "description": "Create visual indicators and management interface for task dependencies.",
+        "details": "1. Enhance TaskCard with dependency indicators\n2. Create dependency selector in task detail view\n3. Implement validation to prevent circular dependencies\n4. Add visual cues for dependent tasks\n5. Create dependency graph visualization (optional)\n6. Implement API integration for updating dependencies\n7. Add warning when completing tasks with incomplete dependencies",
+        "testStrategy": "Test dependency selection UI. Verify circular dependency prevention. Test API integration for dependency updates.",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement List View for Tasks",
+        "description": "Create an alternative list view with sortable columns for task management.",
+        "details": "1. Create ListView component\n2. Implement sortable table with columns for:\n   - ID\n   - Title\n   - Status\n   - Priority\n   - Dependencies\n   - Subtasks progress\n3. Add sorting functionality for all columns\n4. Implement pagination or virtual scrolling\n5. Add row click handler to open task details\n6. Create view switcher in top navigation\n7. Ensure responsive design for mobile",
+        "testStrategy": "Test sorting functionality for all columns. Verify pagination/virtual scrolling with large datasets. Test responsive behavior on different screen sizes.",
+        "priority": "medium",
+        "dependencies": [
+          5,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Search and Filtering",
+        "description": "Create search functionality and filters for tasks based on various criteria.",
+        "details": "1. Implement search bar in top navigation\n2. Create filter components for:\n   - Status\n   - Priority\n   - Tags\n   - Dependencies\n3. Implement client-side filtering logic\n4. Create filter UI in sidebar\n5. Add clear filters button\n6. Implement URL query params for shareable filtered views\n7. Add filter indicators to show active filters",
+        "testStrategy": "Test search with various queries. Verify filters work correctly individually and in combination. Test URL query parameter functionality.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement Task Master CLI Integration",
+        "description": "Create functionality to execute Task Master CLI commands from the UI.",
+        "details": "1. Create API endpoint for command execution\n2. Implement server-side child process execution\n3. Add security validation for commands\n4. Create command execution UI with:\n   - Command selection dropdown\n   - Parameter inputs\n   - Execution button\n   - Output display\n5. Implement real-time output streaming\n6. Add error handling for command execution\n7. Create command history",
+        "testStrategy": "Test command execution with various parameters. Verify security validation prevents dangerous commands. Test error handling for failed commands.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Animations and Transitions",
+        "description": "Add smooth animations and transitions throughout the UI for a polished user experience.",
+        "details": "1. Install Framer Motion: `npm install framer-motion`\n2. Implement animations for:\n   - Task card hover/focus\n   - Drag and drop\n   - Modal/sidebar open/close\n   - View transitions\n   - List item additions/removals\n3. Ensure 60fps performance\n4. Add reduced motion support for accessibility\n5. Implement exit animations\n6. Create custom loading animations",
+        "testStrategy": "Test animation performance across devices. Verify reduced motion preference is respected. Test animations with screen readers to ensure accessibility.",
+        "priority": "low",
+        "dependencies": [
+          6,
+          7,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Implement Activity Log",
+        "description": "Create an activity log showing recent changes to tasks and project.",
+        "details": "1. Design ActivityLog component\n2. Create activity data model\n3. Implement activity tracking in API endpoints\n4. Create WebSocket events for real-time activity updates\n5. Add activity log to sidebar\n6. Implement filtering and pagination for activities\n7. Add user-friendly timestamps\n8. Create activity item components with appropriate icons",
+        "testStrategy": "Test activity logging for various actions. Verify real-time updates via WebSocket. Test filtering and pagination of activity items.",
+        "priority": "low",
+        "dependencies": [
+          4,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement Export Functionality",
+        "description": "Create functionality to export the board state as an image or PDF.",
+        "details": "1. Research and select appropriate libraries (html2canvas, jsPDF)\n2. Implement board capture functionality\n3. Create export options UI\n4. Add export formats:\n   - PNG image\n   - PDF document\n5. Implement download functionality\n6. Add loading state during export generation\n7. Create export settings (paper size, orientation, etc.)",
+        "testStrategy": "Test export functionality with various board states. Verify exported files open correctly. Test with different export settings.",
+        "priority": "low",
+        "dependencies": [
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Implement Accessibility Features",
+        "description": "Ensure the application meets WCAG 2.1 AA compliance with full keyboard navigation and screen reader support.",
+        "details": "1. Implement keyboard navigation throughout the app\n2. Add proper ARIA attributes to all components\n3. Ensure sufficient color contrast\n4. Implement focus indicators\n5. Add skip links for keyboard users\n6. Create screen reader announcements for dynamic content\n7. Implement high contrast mode\n8. Test with screen readers (NVDA, VoiceOver)\n9. Fix any accessibility issues found during testing",
+        "testStrategy": "Run automated accessibility tests using axe-core. Perform manual testing with keyboard only. Test with screen readers on different browsers.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          6,
+          7,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Performance Optimizations",
+        "description": "Optimize the application for performance, ensuring it can handle 1000+ tasks without lag.",
+        "details": "1. Implement virtualized lists for large datasets\n2. Add memoization for expensive computations\n3. Optimize React renders with useMemo and useCallback\n4. Implement code splitting for large components\n5. Add bundle analysis and optimization\n6. Optimize images and assets\n7. Implement efficient filtering and sorting algorithms\n8. Add performance monitoring\n9. Optimize WebSocket updates",
+        "testStrategy": "Measure performance with React DevTools Profiler. Test with large datasets (1000+ tasks). Verify smooth animations and interactions.",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          8,
+          12,
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Create Comprehensive Documentation",
+        "description": "Develop user documentation, API documentation, and contribution guidelines for the project.",
+        "details": "1. Create README.md with:\n   - Project overview\n   - Installation instructions\n   - Usage guide\n   - Configuration options\n2. Implement in-app help documentation\n3. Create API documentation using Swagger/OpenAPI\n4. Add JSDoc comments to all components and functions\n5. Create CONTRIBUTING.md with contribution guidelines\n6. Add CODE_OF_CONDUCT.md\n7. Create issue and PR templates\n8. Document keyboard shortcuts\n9. Add license information (MIT)",
+        "testStrategy": "Review documentation for accuracy and completeness. Test installation process following the documentation. Verify API documentation matches implementation.",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          5,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-29T09:32:46.199Z",
+      "updated": "2025-06-30T08:01:51.275Z",
+      "description": "Tasks for master context",
+      "lastModified": "2025-06-30T11:36:08.618Z",
+      "version": "1.0.0"
+    }
+  }
+}
