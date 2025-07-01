@@ -15,17 +15,15 @@ export function AppLayout({ children, className }: AppLayoutProps) {
     <div className={cn('flex h-screen bg-background', className)}>
       {/* Sidebar */}
       <Sidebar />
-      
+
       {/* Main Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top Navigation */}
         <TopNav />
-        
+
         {/* Main Content */}
-        <MainContent>
-          {children}
-        </MainContent>
+        <MainContent>{children}</MainContent>
       </div>
     </div>
   );
-} 
+}

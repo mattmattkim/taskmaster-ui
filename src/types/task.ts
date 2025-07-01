@@ -1,6 +1,13 @@
 // Task-related types matching Task Master's data structure
 
-export type TaskStatus = 'pending' | 'in-progress' | 'done' | 'review' | 'blocked' | 'deferred' | 'cancelled';
+export type TaskStatus =
+  | 'pending'
+  | 'in-progress'
+  | 'done'
+  | 'review'
+  | 'blocked'
+  | 'deferred'
+  | 'cancelled';
 export type TaskPriority = 'high' | 'medium' | 'low';
 
 export interface Subtask {
@@ -33,4 +40,4 @@ export interface TasksData {
     lastModified: string;
     [key: string]: any;
   };
-} 
+}

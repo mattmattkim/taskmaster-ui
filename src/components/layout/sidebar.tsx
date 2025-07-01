@@ -25,36 +25,14 @@ export function Sidebar({ className }: SidebarProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
-        {!isCollapsed && (
-          <h2 className="text-lg font-semibold text-foreground">Taskmaster</h2>
-        )}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleSidebar}
-          className="h-8 w-8"
-        >
+        {!isCollapsed && <h2 className="text-lg font-semibold text-foreground">Taskmaster</h2>}
+        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="h-8 w-8">
           {isCollapsed ? (
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           ) : (
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -70,9 +48,7 @@ export function Sidebar({ className }: SidebarProps) {
       <div className="p-4 border-b">
         {!isCollapsed ? (
           <div>
-            <label className="text-sm font-medium text-muted-foreground">
-              Project
-            </label>
+            <label className="text-sm font-medium text-muted-foreground">Project</label>
             <select className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
               <option>Taskmaster UI</option>
             </select>
@@ -94,20 +70,9 @@ export function Sidebar({ className }: SidebarProps) {
               Views
             </h3>
           )}
-          
-          <Button
-            variant="ghost"
-            className={cn(
-              'w-full justify-start',
-              isCollapsed && 'px-2'
-            )}
-          >
-            <svg
-              className="h-4 w-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+
+          <Button variant="ghost" className={cn('w-full justify-start', isCollapsed && 'px-2')}>
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -118,19 +83,8 @@ export function Sidebar({ className }: SidebarProps) {
             {!isCollapsed && 'Kanban Board'}
           </Button>
 
-          <Button
-            variant="ghost"
-            className={cn(
-              'w-full justify-start',
-              isCollapsed && 'px-2'
-            )}
-          >
-            <svg
-              className="h-4 w-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <Button variant="ghost" className={cn('w-full justify-start', isCollapsed && 'px-2')}>
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -141,19 +95,8 @@ export function Sidebar({ className }: SidebarProps) {
             {!isCollapsed && 'List View'}
           </Button>
 
-          <Button
-            variant="ghost"
-            className={cn(
-              'w-full justify-start',
-              isCollapsed && 'px-2'
-            )}
-          >
-            <svg
-              className="h-4 w-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <Button variant="ghost" className={cn('w-full justify-start', isCollapsed && 'px-2')}>
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -172,20 +115,9 @@ export function Sidebar({ className }: SidebarProps) {
               Filters
             </h3>
           )}
-          
-          <Button
-            variant="ghost"
-            className={cn(
-              'w-full justify-start',
-              isCollapsed && 'px-2'
-            )}
-          >
-            <svg
-              className="h-4 w-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+
+          <Button variant="ghost" className={cn('w-full justify-start', isCollapsed && 'px-2')}>
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -196,19 +128,8 @@ export function Sidebar({ className }: SidebarProps) {
             {!isCollapsed && 'Pending'}
           </Button>
 
-          <Button
-            variant="ghost"
-            className={cn(
-              'w-full justify-start',
-              isCollapsed && 'px-2'
-            )}
-          >
-            <svg
-              className="h-4 w-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <Button variant="ghost" className={cn('w-full justify-start', isCollapsed && 'px-2')}>
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -219,19 +140,8 @@ export function Sidebar({ className }: SidebarProps) {
             {!isCollapsed && 'Completed'}
           </Button>
 
-          <Button
-            variant="ghost"
-            className={cn(
-              'w-full justify-start',
-              isCollapsed && 'px-2'
-            )}
-          >
-            <svg
-              className="h-4 w-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <Button variant="ghost" className={cn('w-full justify-start', isCollapsed && 'px-2')}>
+            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -245,4 +155,4 @@ export function Sidebar({ className }: SidebarProps) {
       </nav>
     </aside>
   );
-} 
+}

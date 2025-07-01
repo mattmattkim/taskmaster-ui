@@ -9,6 +9,6 @@ interface TaskSyncProviderProps {
 export function TaskSyncProvider({ children }: TaskSyncProviderProps) {
   // Establish SSE connection for real-time task updates
   useTasksSSE();
-  
+
   return <>{children}</>;
-} 
+}

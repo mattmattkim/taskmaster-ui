@@ -6,22 +6,22 @@ import { Button } from '@/components/ui/button';
 import { Eye, EyeOff, Group, Ungroup } from 'lucide-react';
 
 const COLUMN_TITLES: Record<TaskStatus, string> = {
-  'pending': 'To Do',
+  pending: 'To Do',
   'in-progress': 'In Progress',
-  'review': 'Review',
-  'done': 'Done',
-  'blocked': 'Blocked',
-  'deferred': 'Deferred',
-  'cancelled': 'Cancelled',
+  review: 'Review',
+  done: 'Done',
+  blocked: 'Blocked',
+  deferred: 'Deferred',
+  cancelled: 'Cancelled',
 };
 
 export function KanbanControls() {
-  const { 
-    hiddenColumns, 
-    groupByParentTask, 
-    toggleColumnVisibility, 
+  const {
+    hiddenColumns,
+    groupByParentTask,
+    toggleColumnVisibility,
     setGroupByParentTask,
-    setHiddenColumns
+    setHiddenColumns,
   } = useUI();
 
   const allStatuses = Object.keys(COLUMN_TITLES) as TaskStatus[];
@@ -31,7 +31,7 @@ export function KanbanControls() {
       {/* Grouping Toggle */}
       <div className="flex items-center gap-2 mr-4">
         <Button
-          variant={groupByParentTask ? "default" : "outline"}
+          variant={groupByParentTask ? 'default' : 'outline'}
           size="sm"
           onClick={() => setGroupByParentTask(!groupByParentTask)}
           className="flex items-center gap-2"
@@ -49,7 +49,7 @@ export function KanbanControls() {
           return (
             <Button
               key={status}
-              variant={isHidden ? "outline" : "secondary"}
+              variant={isHidden ? 'outline' : 'secondary'}
               size="sm"
               onClick={() => toggleColumnVisibility(status)}
               className="flex items-center gap-1 text-xs"
@@ -89,4 +89,4 @@ export function KanbanControls() {
       </div>
     </div>
   );
-} 
+}

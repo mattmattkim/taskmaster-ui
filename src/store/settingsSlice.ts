@@ -27,56 +27,61 @@ const initialSettingsState: SettingsState = {
   animationsEnabled: true,
 };
 
-export const createSettingsSlice: StateCreator<
-  SettingsSlice,
-  [],
-  [],
-  SettingsSlice
-> = (set) => ({
+export const createSettingsSlice: StateCreator<SettingsSlice, [], [], SettingsSlice> = (set) => ({
   ...initialSettingsState,
-  
+
   // Actions
   setTheme: (theme) => set({ theme }),
-  
-  toggleAutoSave: () => set((state) => ({ 
-    autoSave: !state.autoSave 
-  })),
-  
-  setAutoSave: (enabled) => set({ 
-    autoSave: enabled 
-  }),
-  
-  toggleShowSubtasks: () => set((state) => ({ 
-    showSubtasks: !state.showSubtasks 
-  })),
-  
-  setShowSubtasks: (show) => set({ 
-    showSubtasks: show 
-  }),
-  
-  toggleCompactView: () => set((state) => ({ 
-    compactView: !state.compactView 
-  })),
-  
-  setCompactView: (compact) => set({ 
-    compactView: compact 
-  }),
-  
-  toggleShowDependencies: () => set((state) => ({ 
-    showDependencies: !state.showDependencies 
-  })),
-  
-  setShowDependencies: (show) => set({ 
-    showDependencies: show 
-  }),
-  
-  toggleAnimations: () => set((state) => ({ 
-    animationsEnabled: !state.animationsEnabled 
-  })),
-  
-  setAnimationsEnabled: (enabled) => set({ 
-    animationsEnabled: enabled 
-  }),
-  
+
+  toggleAutoSave: () =>
+    set((state) => ({
+      autoSave: !state.autoSave,
+    })),
+
+  setAutoSave: (enabled) =>
+    set({
+      autoSave: enabled,
+    }),
+
+  toggleShowSubtasks: () =>
+    set((state) => ({
+      showSubtasks: !state.showSubtasks,
+    })),
+
+  setShowSubtasks: (show) =>
+    set({
+      showSubtasks: show,
+    }),
+
+  toggleCompactView: () =>
+    set((state) => ({
+      compactView: !state.compactView,
+    })),
+
+  setCompactView: (compact) =>
+    set({
+      compactView: compact,
+    }),
+
+  toggleShowDependencies: () =>
+    set((state) => ({
+      showDependencies: !state.showDependencies,
+    })),
+
+  setShowDependencies: (show) =>
+    set({
+      showDependencies: show,
+    }),
+
+  toggleAnimations: () =>
+    set((state) => ({
+      animationsEnabled: !state.animationsEnabled,
+    })),
+
+  setAnimationsEnabled: (enabled) =>
+    set({
+      animationsEnabled: enabled,
+    }),
+
   resetSettings: () => set(initialSettingsState),
-}); 
+});
