@@ -15,6 +15,8 @@ export const useTasks = () => {
   const deleteTask = useStore((state) => state.deleteTask);
   const updateTaskStatus = useStore((state) => state.updateTaskStatus);
   const updateSubtaskStatus = useStore((state) => state.updateSubtaskStatus);
+  const reorderTasks = useStore((state) => state.reorderTasks);
+  const moveTaskToPosition = useStore((state) => state.moveTaskToPosition);
   const setTasksLoading = useStore((state) => state.setTasksLoading);
   const setTasksError = useStore((state) => state.setTasksError);
   const setLastSync = useStore((state) => state.setLastSync);
@@ -30,6 +32,8 @@ export const useTasks = () => {
     deleteTask,
     updateTaskStatus,
     updateSubtaskStatus,
+    reorderTasks,
+    moveTaskToPosition,
     setTasksLoading,
     setTasksError,
     setLastSync,
@@ -126,6 +130,7 @@ export const useFilteredTasks = () => {
 export const useKanbanColumns = () => {
   const tasks = useFilteredTasks();
   const groupByParentTask = useStore((state) => state.groupByParentTask);
+  const sortBy = useStore((state) => state.sortBy);
   
   const columns = useMemo(() => {
     const statusColumns: Record<TaskStatus, Task[]> = {
@@ -165,8 +170,15 @@ export const useKanbanColumns = () => {
       });
     }
     
+    // Sort each column by order field when sorting by ID (for manual reordering)
+    if (sortBy === 'id') {
+      Object.keys(statusColumns).forEach((status) => {
+        statusColumns[status as TaskStatus].sort((a, b) => (a.order ?? a.id) - (b.order ?? b.id));
+      });
+    }
+    
     return statusColumns;
-  }, [tasks, groupByParentTask]);
+  }, [tasks, groupByParentTask, sortBy]);
   
   return columns;
 }; 

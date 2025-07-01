@@ -38,31 +38,48 @@ function broadcastUpdate() {
   try {
     // Read the updated tasks file
     const tasksData = fs.readFileSync(TASKS_FILE_PATH, 'utf-8');
-    const tasks = JSON.parse(tasksData);
+    const tasksJson = JSON.parse(tasksData);
+    
+    // Extract tasks array from the current tag (master)
+    const tasks = tasksJson.master?.tasks || [];
     
     // Send update to all connected clients
     const message = `data: ${JSON.stringify({ type: 'tasks-updated', tasks })}\n\n`;
+    const encoder = new TextEncoder();
+    
+    // Track failed clients for cleanup
+    const failedClients = new Set<ReadableStreamDefaultController>();
     
     clients.forEach((controller) => {
       try {
-        controller.enqueue(new TextEncoder().encode(message));
+        controller.enqueue(encoder.encode(message));
       } catch (error) {
         // Client might be disconnected
-        clients.delete(controller);
+        console.log('Failed to send to client, marking for removal');
+        failedClients.add(controller);
       }
     });
+    
+    // Clean up failed clients
+    failedClients.forEach(controller => clients.delete(controller));
+    
+    console.log(`Broadcast complete. Active clients: ${clients.size}`);
   } catch (error) {
     console.error('Error broadcasting update:', error);
   }
 }
 
 export async function GET(request: NextRequest) {
+  console.log('SSE connection request received');
+  
   // Initialize watcher if not already done
   initializeWatcher();
   
   // Create a new ReadableStream for SSE
   const stream = new ReadableStream({
     start(controller) {
+      console.log('New SSE client connected');
+      
       // Add this client to the set
       clients.add(controller);
       
@@ -76,7 +93,9 @@ export async function GET(request: NextRequest) {
       try {
         if (fs.existsSync(TASKS_FILE_PATH)) {
           const tasksData = fs.readFileSync(TASKS_FILE_PATH, 'utf-8');
-          const tasks = JSON.parse(tasksData);
+          const tasksJson = JSON.parse(tasksData);
+          // Extract tasks array from the current tag (master)
+          const tasks = tasksJson.master?.tasks || [];
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ type: 'initial-tasks', tasks })}\n\n`)
           );
@@ -92,6 +111,7 @@ export async function GET(request: NextRequest) {
         } catch (error) {
           clearInterval(pingInterval);
           clients.delete(controller);
+          console.log('Client disconnected during ping');
         }
       }, 30000); // Ping every 30 seconds
       
@@ -99,21 +119,24 @@ export async function GET(request: NextRequest) {
       request.signal.addEventListener('abort', () => {
         clearInterval(pingInterval);
         clients.delete(controller);
+        console.log('Client disconnected (abort signal)');
       });
     },
     
     cancel(controller) {
       // Client disconnected
       clients.delete(controller);
+      console.log('Client disconnected (cancel)');
     }
   });
   
-  // Return SSE response
+  // Return SSE response with proper headers
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-transform',
       'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no', // Disable Nginx buffering
     },
   });
 } 
