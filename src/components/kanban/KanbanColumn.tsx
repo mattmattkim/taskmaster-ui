@@ -52,7 +52,7 @@ export function KanbanColumn({
       );
     }
 
-    const elements = [];
+    const elements: React.JSX.Element[] = [];
 
     visibleTasks.forEach((task, index) => {
       // Add drop zone above this task if needed
