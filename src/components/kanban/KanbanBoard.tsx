@@ -47,6 +47,7 @@ export function KanbanBoard() {
   const { updateTaskStatus, reorderTasks, moveTaskToPosition, setTasks, setTasksLoading, setTasksError } = useTasks();
   const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
   const [draggedOverColumn, setDraggedOverColumn] = useState<TaskStatus | null>(null);
+  const [lastTaskOverId, setLastTaskOverId] = useState<number | null>(null);
   
   // Fetch tasks using React Query
   const { data: tasks, isLoading, error } = useTasksQuery();
@@ -78,6 +79,7 @@ export function KanbanBoard() {
     const { active } = event;
     setActiveTaskId(Number(active.id));
     setDraggedOverColumn(null);
+    setLastTaskOverId(null);
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -106,6 +108,7 @@ export function KanbanBoard() {
       if (targetTask) {
         setDraggedOverColumn(targetTask.status);
       }
+      setLastTaskOverId(over.id as number);
     } else {
       setDraggedOverColumn(null);
     }
@@ -163,8 +166,11 @@ export function KanbanBoard() {
         });
       }
     } else if (typeof over.id === 'string' && validStatuses.includes(over.id as TaskStatus)) {
-      // Dropped on a column (goes to end)
+      // Dropped on a column (goes to end or relative to last hovered task)
       newStatus = over.id as TaskStatus;
+      if (draggedTask.status === newStatus && lastTaskOverId) {
+        targetTaskId = lastTaskOverId;
+      }
     } else {
       console.error('Invalid drop target:', over.id);
       return;
@@ -179,10 +185,35 @@ export function KanbanBoard() {
       isReordering: draggedTask.status === newStatus
     });
 
-    if (draggedTask.status === newStatus && targetTaskId) {
-      // Reordering within the same column
-      console.log('Reordering task', sourceTaskId, insertAbove ? 'above' : 'below', 'task', targetTaskId);
-      reorderTasks(sourceTaskId, targetTaskId);
+    if (draggedTask.status === newStatus) {
+      // We are moving within the same column.
+
+      // Decide the effective target ID. Preference order:
+      // 1. Explicit targetTaskId (we dropped on a task)
+      // 2. lastTaskOverId remembered while hovering
+      // 3. Fallback to first / last task in column based on drag direction
+
+      let effectiveTargetId: number | null = targetTaskId ?? lastTaskOverId;
+
+      if (effectiveTargetId == null) {
+        const columnTasksSorted = Object.values(columns)
+          .flat()
+          .filter((t) => t.status === draggedTask.status && t.id !== sourceTaskId)
+          .sort((a, b) => (a.order ?? a.id) - (b.order ?? b.id));
+
+        if (columnTasksSorted.length > 0) {
+          const movingDown = event.delta ? event.delta.y > 0 : false;
+          effectiveTargetId = movingDown
+            ? columnTasksSorted[columnTasksSorted.length - 1].id // last task
+            : columnTasksSorted[0].id; // first task
+        }
+      }
+
+      if (effectiveTargetId != null && effectiveTargetId !== sourceTaskId) {
+        console.log('Reordering task', sourceTaskId, 'relative to task', effectiveTargetId);
+        reorderTasks(sourceTaskId, effectiveTargetId);
+      }
+      return; // finished handling same-column move
     } else if (draggedTask.status !== newStatus) {
       // Moving to a different column (status change)
       console.log('Moving task', sourceTaskId, 'from', draggedTask.status, 'to', newStatus);

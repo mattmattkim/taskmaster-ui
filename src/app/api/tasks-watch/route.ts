@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-// Store active connections
-const clients = new Set<ReadableStreamDefaultController>();
+// Store active connections with their cleanup functions
+const clients = new Map<ReadableStreamDefaultController, () => void>();
 
 // Path to tasks.json file
 const TASKS_FILE_PATH = path.join(process.cwd(), '.taskmaster', 'tasks', 'tasks.json');
@@ -50,18 +50,22 @@ function broadcastUpdate() {
     // Track failed clients for cleanup
     const failedClients = new Set<ReadableStreamDefaultController>();
 
-    clients.forEach((controller) => {
+    clients.forEach((cleanup, controller) => {
       try {
         controller.enqueue(encoder.encode(message));
       } catch (error) {
-        // Client might be disconnected
+        // Client might be disconnected, mark for cleanup
         console.log('Failed to send to client, marking for removal');
         failedClients.add(controller);
       }
     });
 
     // Clean up failed clients
-    failedClients.forEach((controller) => clients.delete(controller));
+    failedClients.forEach((controller) => {
+      const cleanup = clients.get(controller);
+      if (cleanup) cleanup();
+      clients.delete(controller);
+    });
 
     console.log(`Broadcast complete. Active clients: ${clients.size}`);
   } catch (error) {
@@ -79,16 +83,39 @@ export async function GET(request: NextRequest) {
   const stream = new ReadableStream({
     start(controller) {
       console.log('New SSE client connected');
+      
+      const encoder = new TextEncoder();
+      
+      // Keep connection alive with periodic pings
+      const pingInterval = setInterval(() => {
+        try {
+          // Check if controller is still valid before pinging
+          if (clients.has(controller)) {
+            controller.enqueue(encoder.encode(`:ping\n\n`));
+          } else {
+            clearInterval(pingInterval);
+          }
+        } catch (error) {
+          console.log('Error sending ping, cleaning up client');
+          clearInterval(pingInterval);
+          clients.delete(controller);
+        }
+      }, 30000); // Ping every 30 seconds
 
-      // Add this client to the set
-      clients.add(controller);
+      // Cleanup function for this connection
+      const cleanup = () => {
+        clearInterval(pingInterval);
+        clients.delete(controller);
+      };
+
+      // Add this client to the map with its cleanup function
+      clients.set(controller, cleanup);
 
       // Send initial connection message
-      const encoder = new TextEncoder();
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected' })}\n\n`));
-
-      // Send initial tasks data
       try {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'connected' })}\n\n`));
+
+        // Send initial tasks data
         if (fs.existsSync(TASKS_FILE_PATH)) {
           const tasksData = fs.readFileSync(TASKS_FILE_PATH, 'utf-8');
           const tasksJson = JSON.parse(tasksData);
@@ -99,32 +126,22 @@ export async function GET(request: NextRequest) {
           );
         }
       } catch (error) {
-        console.error('Error reading initial tasks:', error);
+        console.error('Error sending initial data:', error);
+        cleanup();
       }
 
-      // Keep connection alive with periodic pings
-      const pingInterval = setInterval(() => {
-        try {
-          controller.enqueue(encoder.encode(`:ping\n\n`));
-        } catch (error) {
-          clearInterval(pingInterval);
-          clients.delete(controller);
-          console.log('Client disconnected during ping');
-        }
-      }, 30000); // Ping every 30 seconds
-
-      // Clean up on close
+      // Clean up on client abort
       request.signal.addEventListener('abort', () => {
-        clearInterval(pingInterval);
-        clients.delete(controller);
         console.log('Client disconnected (abort signal)');
+        cleanup();
       });
     },
 
-    cancel(controller) {
+    cancel(reason) {
       // Client disconnected
-      clients.delete(controller);
-      console.log('Client disconnected (cancel)');
+      console.log('Client disconnected (cancel)', reason);
+      const cleanup = clients.get(reason);
+      if (cleanup) cleanup();
     },
   });
 
@@ -135,6 +152,9 @@ export async function GET(request: NextRequest) {
       'Cache-Control': 'no-cache, no-transform',
       Connection: 'keep-alive',
       'X-Accel-Buffering': 'no', // Disable Nginx buffering
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Allow-Headers': 'Cache-Control',
     },
   });
 }

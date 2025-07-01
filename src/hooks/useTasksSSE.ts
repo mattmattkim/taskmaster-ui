@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTasks } from './useTaskStore';
 import { Task } from '@/types/task';
@@ -12,9 +12,42 @@ export const useTasksSSE = () => {
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
+  const isConnectingRef = useRef(false);
+  const maxReconnectAttempts = 5;
 
-  const connect = () => {
+  const disconnect = useCallback(() => {
+    console.log('Disconnecting SSE');
+    
+    if (reconnectTimeoutRef.current) {
+      clearTimeout(reconnectTimeoutRef.current);
+      reconnectTimeoutRef.current = null;
+    }
+
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+
+    isConnectingRef.current = false;
+  }, []);
+
+  const connect = useCallback(() => {
+    // Prevent multiple simultaneous connection attempts
+    if (isConnectingRef.current || eventSourceRef.current?.readyState === EventSource.OPEN) {
+      console.log('SSE connection already exists or is connecting, skipping');
+      return;
+    }
+
+    // Stop if we've exceeded max attempts
+    if (reconnectAttemptsRef.current >= maxReconnectAttempts) {
+      console.log('Max reconnection attempts reached, stopping reconnections');
+      setTasksError('Connection failed after multiple attempts. Please refresh the page.');
+      return;
+    }
+
     try {
+      isConnectingRef.current = true;
+      
       // Close existing connection if any
       if (eventSourceRef.current) {
         console.log('Closing existing SSE connection');
@@ -29,14 +62,13 @@ export const useTasksSSE = () => {
       eventSource.onopen = () => {
         console.log('SSE connection established successfully');
         reconnectAttemptsRef.current = 0;
+        isConnectingRef.current = false;
         setTasksError(null);
       };
 
       eventSource.onmessage = (event) => {
-        console.log('SSE message received:', event.data);
         try {
           const data = JSON.parse(event.data);
-          console.log('Parsed SSE data:', data.type, data);
 
           switch (data.type) {
             case 'connected':
@@ -51,27 +83,18 @@ export const useTasksSSE = () => {
                 // Update Zustand store
                 setTasks(data.tasks as Task[]);
                 setLastSync(new Date());
-                console.log('Updated Zustand store with new tasks');
 
                 // Update React Query cache for all task list queries
-                const updatedQueries = queryClient.setQueriesData(
+                queryClient.setQueriesData(
                   { queryKey: taskKeys.lists() },
                   data.tasks as Task[]
                 );
-                console.log('Updated React Query caches:', updatedQueries.length, 'queries');
-
-                // Log the actual query keys that were updated
-                updatedQueries.forEach(([queryKey]) => {
-                  console.log('Updated query:', queryKey);
-                });
 
                 // Invalidate queries to ensure consistency
-                // This will trigger a refetch if any components are actively using the data
                 queryClient.invalidateQueries({
                   queryKey: taskKeys.lists(),
                   refetchType: 'none', // Don't refetch immediately, just mark as stale
                 });
-                console.log('Invalidated React Query task lists');
               } else {
                 console.warn('Received tasks update without valid tasks array:', data);
               }
@@ -87,73 +110,61 @@ export const useTasksSSE = () => {
       };
 
       eventSource.onerror = (error) => {
-        console.error('SSE error occurred:', error);
-        console.log('EventSource readyState:', eventSource.readyState);
-        console.log('EventSource.CONNECTING:', EventSource.CONNECTING);
-        console.log('EventSource.OPEN:', EventSource.OPEN);
-        console.log('EventSource.CLOSED:', EventSource.CLOSED);
+        console.error('SSE connection error occurred');
+        console.error('EventSource readyState:', eventSource.readyState);
+        console.error('Connection state:', {
+          CONNECTING: EventSource.CONNECTING,
+          OPEN: EventSource.OPEN,
+          CLOSED: EventSource.CLOSED,
+          current: eventSource.readyState
+        });
 
-        eventSource.close();
+        isConnectingRef.current = false;
 
-        // Exponential backoff for reconnection
-        const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000);
-        reconnectAttemptsRef.current++;
+        // Only attempt reconnection if we're not at max attempts
+        if (reconnectAttemptsRef.current < maxReconnectAttempts) {
+          // Exponential backoff for reconnection
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 10000);
+          reconnectAttemptsRef.current++;
 
-        setTasksError('Connection lost. Reconnecting...');
+          setTasksError(`Connection lost. Reconnecting... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`);
 
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
+          if (reconnectTimeoutRef.current) {
+            clearTimeout(reconnectTimeoutRef.current);
+          }
+
+          reconnectTimeoutRef.current = setTimeout(() => {
+            console.log(`Attempting to reconnect (attempt ${reconnectAttemptsRef.current})...`);
+            connect();
+          }, delay);
+        } else {
+          setTasksError('Connection failed after multiple attempts. Please refresh the page.');
         }
 
-        reconnectTimeoutRef.current = setTimeout(() => {
-          console.log(`Attempting to reconnect (attempt ${reconnectAttemptsRef.current})...`);
-          connect();
-        }, delay);
+        // Close the failed connection
+        if (eventSource.readyState !== EventSource.CLOSED) {
+          eventSource.close();
+        }
       };
     } catch (error) {
       console.error('Error creating EventSource:', error);
+      isConnectingRef.current = false;
       setTasksError('Failed to connect to task watcher');
     }
-  };
-
-  const disconnect = () => {
-    console.log('Disconnecting SSE');
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
-
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-      reconnectTimeoutRef.current = null;
-    }
-  };
+  }, [setTasks, setLastSync, setTasksError, queryClient]);
 
   useEffect(() => {
     console.log('useTasksSSE: Mounting, establishing connection');
+    
     // Connect on mount
     connect();
-
-    // Handle page visibility changes
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        console.log('Page hidden, disconnecting SSE');
-        disconnect();
-      } else {
-        console.log('Page visible, reconnecting SSE');
-        connect();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Cleanup on unmount
     return () => {
       console.log('useTasksSSE: Unmounting, cleaning up');
       disconnect();
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [connect, disconnect]);
 
   return {
     reconnect: connect,
