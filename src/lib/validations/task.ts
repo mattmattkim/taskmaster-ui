@@ -8,7 +8,7 @@ export const TaskStatusSchema = z.enum([
   'review',
   'blocked',
   'deferred',
-  'cancelled'
+  'cancelled',
 ]);
 
 export const TaskPrioritySchema = z.enum(['high', 'medium', 'low']);
@@ -69,4 +69,4 @@ export type UpdateTaskWithIdInput = {
   status?: TaskStatus;
   subtasks?: Subtask[];
 };
-export type TaskQuery = z.infer<typeof TaskQuerySchema>; 
+export type TaskQuery = z.infer<typeof TaskQuerySchema>;

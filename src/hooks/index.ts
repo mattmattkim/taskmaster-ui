@@ -1,22 +1,8 @@
 // Task-related hooks
-export {
-  useTasks,
-  useTaskSelectors,
-  useFilteredTasks,
-  useKanbanColumns,
-} from './useTaskStore';
+export { useTasks, useTaskSelectors, useFilteredTasks, useKanbanColumns } from './useTaskStore';
 
 // UI-related hooks
-export {
-  useUI,
-  useSidebar,
-  useTaskDetail,
-  useFilters,
-} from './useUIStore';
+export { useUI, useSidebar, useTaskDetail, useFilters } from './useUIStore';
 
 // Settings-related hooks
-export {
-  useSettings,
-  useThemeSettings,
-  useViewSettings,
-} from './useSettings'; 
+export { useSettings, useThemeSettings, useViewSettings } from './useSettings';

@@ -8,7 +8,7 @@ export const useTasks = () => {
   const tasksLoading = useStore((state) => state.tasksLoading);
   const tasksError = useStore((state) => state.tasksError);
   const lastSync = useStore((state) => state.lastSync);
-  
+
   const setTasks = useStore((state) => state.setTasks);
   const addTask = useStore((state) => state.addTask);
   const updateTask = useStore((state) => state.updateTask);
@@ -20,7 +20,7 @@ export const useTasks = () => {
   const setTasksLoading = useStore((state) => state.setTasksLoading);
   const setTasksError = useStore((state) => state.setTasksError);
   const setLastSync = useStore((state) => state.setLastSync);
-  
+
   return {
     tasks,
     tasksLoading,
@@ -47,7 +47,7 @@ export const useTaskSelectors = () => {
   const getTasksByPriority = useStore((state) => state.getTasksByPriority);
   const getPendingTasks = useStore((state) => state.getPendingTasks);
   const getTasksWithSubtasks = useStore((state) => state.getTasksWithSubtasks);
-  
+
   return {
     getTaskById,
     getTasksByStatus,
@@ -65,10 +65,10 @@ export const useFilteredTasks = () => {
   const filterPriority = useStore((state) => state.filterPriority);
   const sortBy = useStore((state) => state.sortBy);
   const sortOrder = useStore((state) => state.sortOrder);
-  
+
   const filteredTasks = useMemo(() => {
     let filtered = tasks;
-    
+
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -79,25 +79,21 @@ export const useFilteredTasks = () => {
           task.details.toLowerCase().includes(query)
       );
     }
-    
+
     // Apply status filter
     if (filterStatus.length > 0) {
-      filtered = filtered.filter((task: Task) =>
-        filterStatus.includes(task.status)
-      );
+      filtered = filtered.filter((task: Task) => filterStatus.includes(task.status));
     }
-    
+
     // Apply priority filter
     if (filterPriority.length > 0) {
-      filtered = filtered.filter((task: Task) =>
-        filterPriority.includes(task.priority)
-      );
+      filtered = filtered.filter((task: Task) => filterPriority.includes(task.priority));
     }
-    
+
     // Apply sorting
     const sorted = [...filtered].sort((a: Task, b: Task) => {
       let compareValue = 0;
-      
+
       switch (sortBy) {
         case 'id':
           compareValue = a.id - b.id;
@@ -116,13 +112,13 @@ export const useFilteredTasks = () => {
           compareValue = a.dependencies.length - b.dependencies.length;
           break;
       }
-      
+
       return sortOrder === 'asc' ? compareValue : -compareValue;
     });
-    
+
     return sorted;
   }, [tasks, searchQuery, filterStatus, filterPriority, sortBy, sortOrder]);
-  
+
   return filteredTasks;
 };
 
@@ -131,30 +127,32 @@ export const useKanbanColumns = () => {
   const tasks = useFilteredTasks();
   const groupByParentTask = useStore((state) => state.groupByParentTask);
   const sortBy = useStore((state) => state.sortBy);
-  
+
   const columns = useMemo(() => {
     const statusColumns: Record<TaskStatus, Task[]> = {
-      'pending': [],
+      pending: [],
       'in-progress': [],
-      'review': [],
-      'done': [],
-      'blocked': [],
-      'deferred': [],
-      'cancelled': [],
+      review: [],
+      done: [],
+      blocked: [],
+      deferred: [],
+      cancelled: [],
     };
-    
+
     if (groupByParentTask) {
       // Group subtasks under their parent tasks
       const parentTasks = tasks.filter((task: Task) => task.subtasks && task.subtasks.length > 0);
-      const standaloneSubtasks = tasks.filter((task: Task) => !task.subtasks || task.subtasks.length === 0);
-      
+      const standaloneSubtasks = tasks.filter(
+        (task: Task) => !task.subtasks || task.subtasks.length === 0
+      );
+
       // Add parent tasks to their respective columns
       parentTasks.forEach((task: Task) => {
         if (statusColumns[task.status]) {
           statusColumns[task.status].push(task);
         }
       });
-      
+
       // Add standalone tasks (no subtasks) to their respective columns
       standaloneSubtasks.forEach((task: Task) => {
         if (statusColumns[task.status]) {
@@ -169,16 +167,16 @@ export const useKanbanColumns = () => {
         }
       });
     }
-    
+
     // Sort each column by order field when sorting by ID (for manual reordering)
     if (sortBy === 'id') {
       Object.keys(statusColumns).forEach((status) => {
         statusColumns[status as TaskStatus].sort((a, b) => (a.order ?? a.id) - (b.order ?? b.id));
       });
     }
-    
+
     return statusColumns;
   }, [tasks, groupByParentTask, sortBy]);
-  
+
   return columns;
-}; 
+};

@@ -28,11 +28,11 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
   const { setSelectedTaskId } = useTaskDetail();
   const { groupByParentTask } = useUI();
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   // Check if this is a placeholder task (negative ID)
   const isPlaceholder = task.id < 0;
   const actualTaskId = isPlaceholder ? Math.abs(task.id) : task.id;
-  
+
   const {
     attributes,
     listeners,
@@ -55,7 +55,7 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
   };
 
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
-  const completedSubtasks = task.subtasks?.filter(st => st.status === 'done').length || 0;
+  const completedSubtasks = task.subtasks?.filter((st) => st.status === 'done').length || 0;
   const totalSubtasks = task.subtasks?.length || 0;
   const showSubtasks = groupByParentTask && hasSubtasks && !isPlaceholder;
 
@@ -93,20 +93,18 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
                 )}
               </button>
             )}
-            <h4 className="font-medium text-sm line-clamp-2 flex-1">
-              {task.title}
-            </h4>
+            <h4 className="font-medium text-sm line-clamp-2 flex-1">{task.title}</h4>
           </div>
-          <span className={`text-xs px-2 py-1 rounded-full font-medium ${PRIORITY_BADGES[task.priority]}`}>
+          <span
+            className={`text-xs px-2 py-1 rounded-full font-medium ${PRIORITY_BADGES[task.priority]}`}
+          >
             {task.priority}
           </span>
         </div>
 
         {/* Description */}
         {task.description && (
-          <p className="text-xs text-muted-foreground line-clamp-2">
-            {task.description}
-          </p>
+          <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
         )}
 
         {/* Footer */}
@@ -131,15 +129,15 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
                 ) : (
                   <Clock className="w-3 h-3" />
                 )}
-                <span>{completedSubtasks}/{totalSubtasks}</span>
+                <span>
+                  {completedSubtasks}/{totalSubtasks}
+                </span>
               </div>
             )}
           </div>
 
           {/* Status indicator for blocked tasks */}
-          {task.status === 'blocked' && (
-            <AlertCircle className="w-4 h-4 text-red-500" />
-          )}
+          {task.status === 'blocked' && <AlertCircle className="w-4 h-4 text-red-500" />}
         </div>
 
         {/* Subtasks */}
@@ -151,17 +149,21 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
                   key={subtask.id}
                   className="flex items-center gap-2 p-2 rounded bg-muted/30 text-xs"
                 >
-                  <div className={`w-2 h-2 rounded-full ${
-                    subtask.status === 'done' 
-                      ? 'bg-green-500' 
-                      : subtask.status === 'in-progress'
-                      ? 'bg-blue-500'
-                      : subtask.status === 'blocked'
-                      ? 'bg-red-500'
-                      : 'bg-gray-400'
-                  }`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${
+                      subtask.status === 'done'
+                        ? 'bg-green-500'
+                        : subtask.status === 'in-progress'
+                          ? 'bg-blue-500'
+                          : subtask.status === 'blocked'
+                            ? 'bg-red-500'
+                            : 'bg-gray-400'
+                    }`}
+                  />
                   <span className="flex-1 line-clamp-1">{subtask.title}</span>
-                  <span className="text-muted-foreground">#{actualTaskId}.{subtask.id}</span>
+                  <span className="text-muted-foreground">
+                    #{actualTaskId}.{subtask.id}
+                  </span>
                 </div>
               ))}
             </div>
@@ -170,4 +172,4 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
       </div>
     </div>
   );
-} 
+}

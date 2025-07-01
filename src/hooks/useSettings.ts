@@ -8,7 +8,7 @@ export const useSettings = () => {
   const compactView = useStore((state) => state.compactView);
   const showDependencies = useStore((state) => state.showDependencies);
   const animationsEnabled = useStore((state) => state.animationsEnabled);
-  
+
   const setTheme = useStore((state) => state.setTheme);
   const toggleAutoSave = useStore((state) => state.toggleAutoSave);
   const setAutoSave = useStore((state) => state.setAutoSave);
@@ -21,7 +21,7 @@ export const useSettings = () => {
   const toggleAnimations = useStore((state) => state.toggleAnimations);
   const setAnimationsEnabled = useStore((state) => state.setAnimationsEnabled);
   const resetSettings = useStore((state) => state.resetSettings);
-  
+
   return {
     // State
     theme,
@@ -50,7 +50,7 @@ export const useSettings = () => {
 export const useThemeSettings = () => {
   const theme = useStore((state) => state.theme);
   const setTheme = useStore((state) => state.setTheme);
-  
+
   return { theme, setTheme };
 };
 
@@ -60,12 +60,12 @@ export const useViewSettings = () => {
   const compactView = useStore((state) => state.compactView);
   const showDependencies = useStore((state) => state.showDependencies);
   const animationsEnabled = useStore((state) => state.animationsEnabled);
-  
+
   const toggleShowSubtasks = useStore((state) => state.toggleShowSubtasks);
   const toggleCompactView = useStore((state) => state.toggleCompactView);
   const toggleShowDependencies = useStore((state) => state.toggleShowDependencies);
   const toggleAnimations = useStore((state) => state.toggleAnimations);
-  
+
   return {
     showSubtasks,
     compactView,
@@ -76,4 +76,4 @@ export const useViewSettings = () => {
     toggleShowDependencies,
     toggleAnimations,
   };
-}; 
+};

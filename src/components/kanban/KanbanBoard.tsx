@@ -3,8 +3,8 @@
 import { KanbanControls } from './KanbanControls';
 import { KanbanColumn } from './KanbanColumn';
 import { useUI } from '@/hooks/useUIStore';
-import { useStore } from '@/store';
-import { Task, TaskStatus } from '@/types/task';
+import { useKanbanColumns } from '@/hooks/useTaskStore';
+import { TaskStatus } from '@/types/task';
 import {
   DndContext,
   DragEndEvent,
@@ -16,7 +16,7 @@ import {
   useSensors,
   closestCenter,
 } from '@dnd-kit/core';
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { TaskCard } from './TaskCard';
 import { useTasks } from '@/hooks/useTaskStore';
 import { useTasksQuery, useUpdateTaskStatusMutation } from '@/hooks/useTasksQuery';
@@ -43,124 +43,28 @@ const COLUMN_COLORS: Record<TaskStatus, string> = {
 
 export function KanbanBoard() {
   const { hiddenColumns } = useUI();
-  const { updateTaskStatus, reorderTasks, moveTaskToPosition } = useTasks();
+  const columns = useKanbanColumns();
+  const { updateTaskStatus, reorderTasks, moveTaskToPosition, setTasks, setTasksLoading, setTasksError } = useTasks();
   const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
   const [draggedOverColumn, setDraggedOverColumn] = useState<TaskStatus | null>(null);
   
-  // Get filter and sort settings from store
-  const searchQuery = useStore((state) => state.searchQuery);
-  const filterStatus = useStore((state) => state.filterStatus);
-  const filterPriority = useStore((state) => state.filterPriority);
-  const sortBy = useStore((state) => state.sortBy);
-  const sortOrder = useStore((state) => state.sortOrder);
-  const groupByParentTask = useStore((state) => state.groupByParentTask);
-  
   // Fetch tasks using React Query
-  const { data: tasks = [], isLoading, error } = useTasksQuery();
+  const { data: tasks, isLoading, error } = useTasksQuery();
   const updateTaskStatusMutation = useUpdateTaskStatusMutation();
 
-  // Process tasks into columns using React Query data
-  const columns = useMemo(() => {
-    const statusColumns: Record<TaskStatus, Task[]> = {
-      'pending': [],
-      'in-progress': [],
-      'review': [],
-      'done': [],
-      'blocked': [],
-      'deferred': [],
-      'cancelled': [],
-    };
-    
-    let filtered = tasks;
-    
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (task: Task) =>
-          task.title.toLowerCase().includes(query) ||
-          task.description.toLowerCase().includes(query) ||
-          task.details.toLowerCase().includes(query)
-      );
-    }
-    
-    // Apply status filter
-    if (filterStatus.length > 0) {
-      filtered = filtered.filter((task: Task) =>
-        filterStatus.includes(task.status)
-      );
-    }
-    
-    // Apply priority filter
-    if (filterPriority.length > 0) {
-      filtered = filtered.filter((task: Task) =>
-        filterPriority.includes(task.priority)
-      );
-    }
-    
-    // Apply sorting
-    const sorted = [...filtered].sort((a: Task, b: Task) => {
-      let compareValue = 0;
-      
-      switch (sortBy) {
-        case 'id':
-          compareValue = a.id - b.id;
-          break;
-        case 'title':
-          compareValue = a.title.localeCompare(b.title);
-          break;
-        case 'priority':
-          const priorityOrder = { high: 0, medium: 1, low: 2 };
-          compareValue = priorityOrder[a.priority] - priorityOrder[b.priority];
-          break;
-        case 'status':
-          compareValue = a.status.localeCompare(b.status);
-          break;
-        case 'dependencies':
-          compareValue = a.dependencies.length - b.dependencies.length;
-          break;
-      }
-      
-      return sortOrder === 'asc' ? compareValue : -compareValue;
-    });
-    
-    // Distribute tasks into columns
-    if (groupByParentTask) {
-      // Group subtasks under their parent tasks
-      const parentTasks = sorted.filter((task: Task) => task.subtasks && task.subtasks.length > 0);
-      const standaloneSubtasks = sorted.filter((task: Task) => !task.subtasks || task.subtasks.length === 0);
-      
-      // Add parent tasks to their respective columns
-      parentTasks.forEach((task: Task) => {
-        if (statusColumns[task.status]) {
-          statusColumns[task.status].push(task);
-        }
-      });
-      
-      // Add standalone tasks (no subtasks) to their respective columns
-      standaloneSubtasks.forEach((task: Task) => {
-        if (statusColumns[task.status]) {
-          statusColumns[task.status].push(task);
-        }
-      });
+  // Sync React Query data with Zustand store
+  useEffect(() => {
+    setTasksLoading(isLoading);
+    if (error) {
+      setTasksError(error.message);
     } else {
-      // Normal flat view
-      sorted.forEach((task: Task) => {
-        if (statusColumns[task.status]) {
-          statusColumns[task.status].push(task);
-        }
-      });
+      setTasksError(null);
     }
     
-    // Sort each column by order field when sorting by ID (for manual reordering)
-    if (sortBy === 'id') {
-      Object.keys(statusColumns).forEach((status) => {
-        statusColumns[status as TaskStatus].sort((a, b) => (a.order ?? a.id) - (b.order ?? b.id));
-      });
+    if (tasks && Array.isArray(tasks)) {
+      setTasks(tasks);
     }
-    
-    return statusColumns;
-  }, [tasks, searchQuery, filterStatus, filterPriority, sortBy, sortOrder, groupByParentTask]);
+  }, [tasks, isLoading, error, setTasks, setTasksLoading, setTasksError]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

@@ -17,7 +17,9 @@ export function TopNav({ className }: TopNavProps) {
   };
 
   return (
-    <header className={cn('flex items-center justify-between border-b bg-background p-4', className)}>
+    <header
+      className={cn('flex items-center justify-between border-b bg-background p-4', className)}
+    >
       {/* Left Section - Search */}
       <div className="flex items-center space-x-4 flex-1 max-w-md">
         <div className="relative flex-1">
@@ -34,28 +36,15 @@ export function TopNav({ className }: TopNavProps) {
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
-          <Input
-            type="search"
-            placeholder="Search tasks..."
-            className="pl-10"
-          />
+          <Input type="search" placeholder="Search tasks..." className="pl-10" />
         </div>
       </div>
 
       {/* Center Section - View Switcher */}
       <div className="flex items-center space-x-2">
         <div className="flex items-center rounded-md border p-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="data-[state=active]:bg-accent"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <Button variant="ghost" size="sm" className="data-[state=active]:bg-accent">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -64,16 +53,8 @@ export function TopNav({ className }: TopNavProps) {
               />
             </svg>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <Button variant="ghost" size="sm">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -89,35 +70,16 @@ export function TopNav({ className }: TopNavProps) {
       <div className="flex items-center space-x-2">
         {/* Add Task Button */}
         <Button size="sm">
-          <svg
-            className="h-4 w-4 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
+          <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Task
         </Button>
 
         {/* Theme Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleTheme}
-        >
+        <Button variant="ghost" size="icon" onClick={toggleTheme}>
           {theme === 'dark' ? (
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -126,12 +88,7 @@ export function TopNav({ className }: TopNavProps) {
               />
             </svg>
           ) : (
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -143,16 +100,8 @@ export function TopNav({ className }: TopNavProps) {
         </Button>
 
         {/* Settings */}
-        <Button
-          variant="ghost"
-          size="icon"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+        <Button variant="ghost" size="icon">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -170,4 +119,4 @@ export function TopNav({ className }: TopNavProps) {
       </div>
     </header>
   );
-} 
+}

@@ -27,4 +27,4 @@ export interface SettingsState {
   compactView: boolean;
   showDependencies: boolean;
   animationsEnabled: boolean;
-} 
+}

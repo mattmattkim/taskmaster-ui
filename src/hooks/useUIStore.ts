@@ -14,7 +14,7 @@ export const useUI = () => {
   const isDragging = useStore((state) => state.isDragging);
   const hiddenColumns = useStore((state) => state.hiddenColumns);
   const groupByParentTask = useStore((state) => state.groupByParentTask);
-  
+
   const toggleSidebar = useStore((state) => state.toggleSidebar);
   const setSidebarOpen = useStore((state) => state.setSidebarOpen);
   const setCurrentView = useStore((state) => state.setCurrentView);
@@ -30,7 +30,7 @@ export const useUI = () => {
   const toggleColumnVisibility = useStore((state) => state.toggleColumnVisibility);
   const setHiddenColumns = useStore((state) => state.setHiddenColumns);
   const setGroupByParentTask = useStore((state) => state.setGroupByParentTask);
-  
+
   return {
     // State
     isSidebarOpen,
@@ -69,7 +69,7 @@ export const useSidebar = () => {
   const isSidebarOpen = useStore((state) => state.isSidebarOpen);
   const toggleSidebar = useStore((state) => state.toggleSidebar);
   const setSidebarOpen = useStore((state) => state.setSidebarOpen);
-  
+
   return { isSidebarOpen, toggleSidebar, setSidebarOpen };
 };
 
@@ -78,7 +78,7 @@ export const useTaskDetail = () => {
   const isTaskDetailOpen = useStore((state) => state.isTaskDetailOpen);
   const setSelectedTaskId = useStore((state) => state.setSelectedTaskId);
   const setTaskDetailOpen = useStore((state) => state.setTaskDetailOpen);
-  
+
   return {
     selectedTaskId,
     isTaskDetailOpen,
@@ -95,7 +95,7 @@ export const useFilters = () => {
   const setFilterStatus = useStore((state) => state.setFilterStatus);
   const setFilterPriority = useStore((state) => state.setFilterPriority);
   const resetFilters = useStore((state) => state.resetFilters);
-  
+
   return {
     searchQuery,
     filterStatus,
@@ -105,4 +105,4 @@ export const useFilters = () => {
     setFilterPriority,
     resetFilters,
   };
-}; 
+};
