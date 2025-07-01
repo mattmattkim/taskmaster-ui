@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Task, TaskStatus } from '@/types/task';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -10,20 +11,72 @@ interface KanbanColumnProps {
   title: string;
   tasks: Task[];
   color: string;
+  isHighlighted?: boolean;
+  draggedTaskId?: number | null;
+  dropPosition?: {taskId: number; above: boolean} | null;
 }
 
-export function KanbanColumn({ status, title, tasks, color }: KanbanColumnProps) {
+export function KanbanColumn({ 
+  status, 
+  title, 
+  tasks, 
+  color, 
+  isHighlighted,
+  draggedTaskId,
+  dropPosition
+}: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: status,
   });
+
+  // Use only real task IDs for SortableContext
+  const sortableIds = tasks.filter(task => task.id > 0).map(task => task.id);
+  
+  // Filter out the currently dragged task from this column's display
+  const visibleTasks = tasks.filter(task => task.id !== draggedTaskId);
+  
+  // Drop zone placeholder
+  const DropZone = () => (
+    <div className="h-2 mx-2 my-1 border-2 border-dashed border-primary/50 bg-primary/10 rounded" />
+  );
+  
+  // Render tasks with drop zone
+  const renderTasksWithDropZone = () => {
+    if (visibleTasks.length === 0) {
+      return isHighlighted ? <DropZone /> : (
+        <div className="text-center py-12 text-sm text-muted-foreground border-2 border-dashed border-muted-foreground/20 rounded-lg mx-2">
+          Drop tasks here
+        </div>
+      );
+    }
+    
+    const elements = [];
+    
+    visibleTasks.forEach((task, index) => {
+      // Add drop zone above this task if needed
+      if (dropPosition?.taskId === task.id && dropPosition.above) {
+        elements.push(<DropZone key={`drop-above-${task.id}`} />);
+      }
+      
+      // Add the task
+      elements.push(<TaskCard key={task.id} task={task} />);
+      
+      // Add drop zone below this task if needed
+      if (dropPosition?.taskId === task.id && !dropPosition.above) {
+        elements.push(<DropZone key={`drop-below-${task.id}`} />);
+      }
+    });
+    
+    return elements;
+  };
 
   return (
     <div
       ref={setNodeRef}
       className={`
-        flex flex-col rounded-lg p-4 h-full min-h-[200px]
+        relative flex flex-col rounded-lg p-4 h-full min-h-0
         ${color}
-        ${isOver ? 'ring-2 ring-primary ring-opacity-50' : ''}
+        ${isOver || isHighlighted ? 'ring-2 ring-primary ring-opacity-50' : ''}
         transition-all duration-200
       `}
     >
@@ -36,24 +89,14 @@ export function KanbanColumn({ status, title, tasks, color }: KanbanColumnProps)
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden">
         <SortableContext
-          items={tasks.map(t => t.id)}
+          items={sortableIds}
           strategy={verticalListSortingStrategy}
         >
-          <div className="space-y-2 min-h-[150px] p-2">
-            {tasks.length === 0 ? (
-              <div className="text-center py-12 text-sm text-muted-foreground border-2 border-dashed border-muted-foreground/20 rounded-lg">
-                Drop tasks here
-              </div>
-            ) : (
-              <>
-                {tasks.map((task) => (
-                  <TaskCard key={task.id} task={task} />
-                ))}
-                <div className="h-8 w-full" /> {/* Extra drop space at bottom */}
-              </>
-            )}
+          <div className="space-y-2 px-2 pb-4">
+            {renderTasksWithDropZone()}
+            <div className="h-16 w-full" /> {/* Extra drop space at bottom */}
           </div>
         </SortableContext>
       </div>

@@ -7,7 +7,7 @@ interface MainContentProps {
 
 export function MainContent({ children, className }: MainContentProps) {
   return (
-    <main className={cn('flex-1 overflow-hidden', className)}>
+    <main className={cn('flex-1 overflow-auto', className)}>
       <div className="h-full p-6">
         {children}
       </div>

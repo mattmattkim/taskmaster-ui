@@ -23,6 +23,7 @@ export interface Task {
   dependencies: number[];
   status: TaskStatus;
   subtasks: Subtask[];
+  order?: number; // For manual reordering within columns
 }
 
 export interface TasksData {

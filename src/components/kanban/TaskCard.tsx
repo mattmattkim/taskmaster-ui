@@ -28,6 +28,11 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
   const { setSelectedTaskId } = useTaskDetail();
   const { groupByParentTask } = useUI();
   const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Check if this is a placeholder task (negative ID)
+  const isPlaceholder = task.id < 0;
+  const actualTaskId = isPlaceholder ? Math.abs(task.id) : task.id;
+  
   const {
     attributes,
     listeners,
@@ -40,17 +45,19 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isSortableDragging ? 0.5 : 1,
+    opacity: isSortableDragging ? 0.5 : isPlaceholder ? 0.4 : 1,
   };
 
   const handleClick = () => {
-    setSelectedTaskId(task.id);
+    // Don't allow clicking on placeholder tasks
+    if (isPlaceholder) return;
+    setSelectedTaskId(actualTaskId);
   };
 
   const hasSubtasks = task.subtasks && task.subtasks.length > 0;
   const completedSubtasks = task.subtasks?.filter(st => st.status === 'done').length || 0;
   const totalSubtasks = task.subtasks?.length || 0;
-  const showSubtasks = groupByParentTask && hasSubtasks;
+  const showSubtasks = groupByParentTask && hasSubtasks && !isPlaceholder;
 
   return (
     <div
@@ -64,6 +71,7 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
         hover:shadow-md transition-shadow
         ${PRIORITY_COLORS[task.priority]}
         ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}
+        ${isPlaceholder ? 'ring-2 ring-primary/30 bg-primary/5' : ''}
       `}
     >
       <div className="space-y-2">
@@ -105,7 +113,7 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center gap-3">
             {/* Task ID */}
-            <span className="font-mono">#{task.id}</span>
+            <span className="font-mono">#{actualTaskId}</span>
 
             {/* Dependencies */}
             {task.dependencies.length > 0 && (
@@ -153,7 +161,7 @@ export function TaskCard({ task, isDragging = false }: TaskCardProps) {
                       : 'bg-gray-400'
                   }`} />
                   <span className="flex-1 line-clamp-1">{subtask.title}</span>
-                  <span className="text-muted-foreground">#{task.id}.{subtask.id}</span>
+                  <span className="text-muted-foreground">#{actualTaskId}.{subtask.id}</span>
                 </div>
               ))}
             </div>
