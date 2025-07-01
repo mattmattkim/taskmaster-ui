@@ -1,4 +1,5 @@
 import { KanbanBoard } from '@/components/kanban';
+import { TaskDetailModal } from '@/components/task-detail';
 
 export default function HomePage() {
   return (
@@ -6,6 +7,7 @@ export default function HomePage() {
       <main className="flex-1 overflow-hidden">
         <KanbanBoard />
       </main>
+      <TaskDetailModal />
     </div>
   );
 }
