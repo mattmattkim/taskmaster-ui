@@ -6,3 +6,6 @@ export { useUI, useSidebar, useTaskDetail, useFilters } from './useUIStore';
 
 // Settings-related hooks
 export { useSettings, useThemeSettings, useViewSettings } from './useSettings';
+
+// Accessibility hooks
+export { useFocusTrap } from './useFocusTrap';
