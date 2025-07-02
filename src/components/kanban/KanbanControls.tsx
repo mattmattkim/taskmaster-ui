@@ -1,9 +1,10 @@
 'use client';
 
 import { useUI } from '@/hooks/useUIStore';
+import { useKanbanColumns } from '@/hooks/useTaskStore';
 import { TaskStatus } from '@/types/task';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff, Group, Ungroup } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const COLUMN_TITLES: Record<TaskStatus, string> = {
   pending: 'To Do',
@@ -16,31 +17,14 @@ const COLUMN_TITLES: Record<TaskStatus, string> = {
 };
 
 export function KanbanControls() {
-  const {
-    hiddenColumns,
-    groupByParentTask,
-    toggleColumnVisibility,
-    setGroupByParentTask,
-    setHiddenColumns,
-  } = useUI();
+  const { hiddenColumns, toggleColumnVisibility, setHiddenColumns } = useUI();
+
+  const columns = useKanbanColumns();
 
   const allStatuses = Object.keys(COLUMN_TITLES) as TaskStatus[];
 
   return (
     <div className="flex flex-wrap items-center gap-2 p-4 bg-muted/50 border-b">
-      {/* Grouping Toggle */}
-      <div className="flex items-center gap-2 mr-4">
-        <Button
-          variant={groupByParentTask ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setGroupByParentTask(!groupByParentTask)}
-          className="flex items-center gap-2"
-        >
-          {groupByParentTask ? <Group className="h-4 w-4" /> : <Ungroup className="h-4 w-4" />}
-          {groupByParentTask ? 'Grouped' : 'Flat View'}
-        </Button>
-      </div>
-
       {/* Column Visibility Toggles */}
       <div className="flex items-center gap-1">
         <span className="text-sm text-muted-foreground mr-2">Columns:</span>
@@ -78,9 +62,9 @@ export function KanbanControls() {
           variant="ghost"
           size="sm"
           onClick={() => {
-            // Hide empty columns (you can implement this logic)
-            // For now, just hide cancelled and deferred as they're often empty
-            setHiddenColumns(['cancelled', 'deferred']);
+            // Find all columns that are actually empty
+            const emptyColumns = allStatuses.filter((status) => columns[status].length === 0);
+            setHiddenColumns(emptyColumns);
           }}
           className="text-xs"
         >
