@@ -47,6 +47,7 @@ export const createTasksSlice: StateCreator<TasksSlice, [], [], TasksSlice> = (s
       tasks: tasks.map((task, index) => ({
         ...task,
         order: task.order ?? index, // Initialize order if not present
+        subtasks: task.subtasks ? [...task.subtasks] : [], // Create new array reference for subtasks
       })),
     }),
 

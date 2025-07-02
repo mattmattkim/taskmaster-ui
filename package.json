@@ -4,6 +4,9 @@
   "description": "A web-based UI wrapper for Task Master with kanban board functionality",
   "private": true,
   "license": "MIT",
+  "bin": {
+    "taskmaster-ui": "./bin/taskmaster-ui.js"
+  },
   "scripts": {
     "dev": "next dev -p 3001 --turbo",
     "dev:debug": "next dev -p 3001 --inspect",

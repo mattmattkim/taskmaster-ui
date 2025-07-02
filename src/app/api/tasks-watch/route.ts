@@ -7,7 +7,8 @@ import * as chokidar from 'chokidar';
 const clients = new Map<ReadableStreamDefaultController, () => void>();
 
 // Path to tasks.json file
-const TASKS_FILE_PATH = path.join(process.cwd(), '.taskmaster', 'tasks', 'tasks.json');
+const PROJECT_ROOT = process.env.TASKMASTER_PROJECT_ROOT || process.cwd();
+const TASKS_FILE_PATH = path.join(PROJECT_ROOT, '.taskmaster', 'tasks', 'tasks.json');
 
 // Initialize file watcher
 let watcher: chokidar.FSWatcher | null = null;

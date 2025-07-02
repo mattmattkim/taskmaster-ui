@@ -37,7 +37,91 @@ A modern, web-based interface for [Task Master](https://github.com/eyaltoledano/
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) (or the port shown in your terminal)
+4. Open [http://localhost:3001](http://localhost:3001) to access the UI
+
+## 📁 Using with Different Projects
+
+The Taskmaster UI can be used with any project that has Taskmaster initialized. Here are several approaches:
+
+### Option 1: Environment Variable (Recommended)
+
+Set the `TASKMASTER_PROJECT_ROOT` environment variable to point to your target project:
+
+```bash
+# Unix/Linux/macOS
+TASKMASTER_PROJECT_ROOT=/path/to/your/project npm run dev
+
+# Windows (Command Prompt)
+set TASKMASTER_PROJECT_ROOT=C:\path\to\your\project && npm run dev
+
+# Windows (PowerShell)
+$env:TASKMASTER_PROJECT_ROOT="C:\path\to\your\project"; npm run dev
+```
+
+### Option 2: Convenience Scripts (Easiest)
+
+Use the provided scripts for cross-platform compatibility:
+
+```bash
+# Unix/Linux/macOS
+./run-with-project.sh /path/to/your/project
+./run-with-project.sh /path/to/your/project dev    # development mode
+./run-with-project.sh /path/to/your/project start  # production mode
+
+# Windows
+run-with-project.bat "C:\path\to\your\project"
+run-with-project.bat "C:\path\to\your\project" dev    # development mode
+run-with-project.bat "C:\path\to\your\project" start  # production mode
+```
+
+### Option 3: Symbolic Link
+
+Create a symbolic link to the target project's `.taskmaster` directory:
+
+```bash
+# Remove current .taskmaster if it exists
+rm -rf .taskmaster
+
+# Create symbolic link (Unix/Linux/macOS)
+ln -s /path/to/your/project/.taskmaster .taskmaster
+
+# Create symbolic link (Windows - run as Administrator)
+mklink /D .taskmaster "C:\path\to\your\project\.taskmaster"
+```
+
+### Option 4: Run from Target Project
+
+Copy or clone the UI directly into your target project:
+
+```bash
+cd /path/to/your/project
+git clone <taskmaster-ui-repo> taskmaster-ui
+cd taskmaster-ui
+npm install
+npm run dev
+```
+
+### Option 5: Global Installation
+
+Install the UI globally and run it from anywhere:
+
+```bash
+# Install globally
+npm install -g .
+
+# Run from any Taskmaster project directory
+cd /path/to/your/project
+taskmaster-ui
+```
+
+### Verifying Setup
+
+The UI will automatically detect and work with:
+- Taskmaster's tagged task format (`{ "master": { "tasks": [...] } }`)
+- Legacy flat format (`{ "tasks": [...] }`)
+- Multiple tags/contexts within the same project
+
+Check the browser console or terminal output for confirmation that the correct tasks file is being loaded.
 
 ## 🛠️ Development
 

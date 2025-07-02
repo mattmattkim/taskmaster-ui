@@ -2,7 +2,9 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { Task } from '@/types/task';
 
-const TASKS_FILE_PATH = path.join(process.cwd(), '.taskmaster', 'tasks', 'tasks.json');
+// Allow configuring the project root via environment variable
+const PROJECT_ROOT = process.env.TASKMASTER_PROJECT_ROOT || process.cwd();
+const TASKS_FILE_PATH = path.join(PROJECT_ROOT, '.taskmaster', 'tasks', 'tasks.json');
 
 export interface TasksFileData {
   tasks: Task[];
