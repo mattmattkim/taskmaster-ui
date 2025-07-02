@@ -1,17 +1,19 @@
 #!/bin/bash
 
 # Script to run Taskmaster UI with a custom project path
-# Usage: ./run-with-project.sh /path/to/your/project [dev|start]
+# Usage: ./run-with-project.sh /path/to/your/project [dev|start] [port]
 
 if [ $# -eq 0 ]; then
-    echo "Usage: $0 <project-path> [dev|start]"
-    echo "Example: $0 /Users/john/my-project dev"
-    echo "Example: $0 ../other-project start"
+    echo "Usage: $0 <project-path> [dev|start] [port]"
+    echo "Example: $0 /Users/john/my-project dev 3002"
+    echo "Example: $0 ../other-project start 4000"
+    echo "Example: $0 ../other-project dev       # defaults to port 3002"
     exit 1
 fi
 
 PROJECT_PATH="$1"
 MODE="${2:-dev}"
+PORT="${3:-3002}"
 
 # Check if project path exists
 if [ ! -d "$PROJECT_PATH" ]; then
@@ -30,14 +32,15 @@ PROJECT_ABSOLUTE=$(cd "$PROJECT_PATH" && pwd)
 
 echo "🚀 Starting Taskmaster UI for project: $PROJECT_ABSOLUTE"
 echo "📋 Looking for tasks in: $PROJECT_ABSOLUTE/.taskmaster/tasks/tasks.json"
-echo "🌐 UI will be available at: http://localhost:3001"
+echo "🌐 UI will be available at: http://localhost:$PORT"
 echo ""
 
 # Set environment variable and run the appropriate script
 export TASKMASTER_PROJECT_ROOT="$PROJECT_ABSOLUTE"
+export PORT="$PORT"
 
 if [ "$MODE" = "start" ]; then
-    npm run start
+    npx next start -p $PORT
 else
-    npm run dev
+    npx next dev -p $PORT --turbo
 fi 
