@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readTasksFile, createTask, writeTasksFile } from '@/lib/tasks-file';
+import { readTasksFile, createTask } from '@/lib/tasks-file';
 import { TaskQuerySchema, CreateTaskSchema } from '@/lib/validations/task';
 import { z } from 'zod';
 

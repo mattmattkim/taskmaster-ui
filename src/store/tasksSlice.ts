@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { Task, TasksData, TaskStatus, TaskPriority } from '@/types/task';
+import { Task, TaskStatus, TaskPriority } from '@/types/task';
 
 export interface TasksSlice {
   // State

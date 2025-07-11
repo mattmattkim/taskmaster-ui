@@ -1,5 +1,4 @@
 import { StateCreator } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { SettingsState } from '@/types/ui';
 
 export interface SettingsSlice extends SettingsState {
