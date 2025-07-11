@@ -54,7 +54,7 @@ export function KanbanColumn({
 
     const elements: React.JSX.Element[] = [];
 
-    visibleTasks.forEach((task, index) => {
+    visibleTasks.forEach((task, _index) => {
       // Add drop zone above this task if needed
       if (dropPosition?.taskId === task.id && dropPosition.above) {
         elements.push(<DropZone key={`drop-above-${task.id}`} />);

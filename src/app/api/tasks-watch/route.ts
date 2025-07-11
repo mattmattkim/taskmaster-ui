@@ -54,7 +54,7 @@ function broadcastUpdate() {
     clients.forEach((cleanup, controller) => {
       try {
         controller.enqueue(encoder.encode(message));
-      } catch (error) {
+      } catch {
         // Client might be disconnected, mark for cleanup
         console.log('Failed to send to client, marking for removal');
         failedClients.add(controller);
@@ -84,9 +84,9 @@ export async function GET(request: NextRequest) {
   const stream = new ReadableStream({
     start(controller) {
       console.log('New SSE client connected');
-      
+
       const encoder = new TextEncoder();
-      
+
       // Keep connection alive with periodic pings
       const pingInterval = setInterval(() => {
         try {
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
           } else {
             clearInterval(pingInterval);
           }
-        } catch (error) {
+        } catch {
           console.log('Error sending ping, cleaning up client');
           clearInterval(pingInterval);
           clients.delete(controller);

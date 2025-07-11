@@ -17,7 +17,7 @@ export const useTasksSSE = () => {
 
   const disconnect = useCallback(() => {
     console.log('Disconnecting SSE');
-    
+
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
@@ -47,7 +47,7 @@ export const useTasksSSE = () => {
 
     try {
       isConnectingRef.current = true;
-      
+
       // Close existing connection if any
       if (eventSourceRef.current) {
         console.log('Closing existing SSE connection');
@@ -85,10 +85,7 @@ export const useTasksSSE = () => {
                 setLastSync(new Date());
 
                 // Update React Query cache for all task list queries
-                queryClient.setQueriesData(
-                  { queryKey: taskKeys.lists() },
-                  data.tasks as Task[]
-                );
+                queryClient.setQueriesData({ queryKey: taskKeys.lists() }, data.tasks as Task[]);
 
                 // Invalidate queries to ensure consistency
                 queryClient.invalidateQueries({
@@ -109,14 +106,14 @@ export const useTasksSSE = () => {
         }
       };
 
-      eventSource.onerror = (error) => {
+      eventSource.onerror = (_error) => {
         console.error('SSE connection error occurred');
         console.error('EventSource readyState:', eventSource.readyState);
         console.error('Connection state:', {
           CONNECTING: EventSource.CONNECTING,
           OPEN: EventSource.OPEN,
           CLOSED: EventSource.CLOSED,
-          current: eventSource.readyState
+          current: eventSource.readyState,
         });
 
         isConnectingRef.current = false;
@@ -127,7 +124,9 @@ export const useTasksSSE = () => {
           const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 10000);
           reconnectAttemptsRef.current++;
 
-          setTasksError(`Connection lost. Reconnecting... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`);
+          setTasksError(
+            `Connection lost. Reconnecting... (attempt ${reconnectAttemptsRef.current}/${maxReconnectAttempts})`
+          );
 
           if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
@@ -155,7 +154,7 @@ export const useTasksSSE = () => {
 
   useEffect(() => {
     console.log('useTasksSSE: Mounting, establishing connection');
-    
+
     // Connect on mount
     connect();
 

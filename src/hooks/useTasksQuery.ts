@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Task, TaskStatus, TaskPriority } from '@/types/task';
-import { CreateTaskInput, UpdateTaskInput, UpdateTaskWithIdInput } from '@/lib/validations/task';
+import { CreateTaskInput, UpdateTaskWithIdInput } from '@/lib/validations/task';
 
 // API client functions
 const taskApi = {

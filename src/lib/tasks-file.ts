@@ -12,7 +12,7 @@ export interface TasksFileData {
     version?: string;
     lastModified?: string;
     currentTag?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -60,7 +60,7 @@ export async function writeTasksFile(data: TasksFileData, tag: string = 'master'
     const dir = path.dirname(TASKS_FILE_PATH);
     await fs.mkdir(dir, { recursive: true });
 
-    let fileData: any;
+    let fileData: Record<string, unknown>;
 
     // Try to read existing file to maintain structure
     try {
@@ -74,16 +74,24 @@ export async function writeTasksFile(data: TasksFileData, tag: string = 'master'
     // Check if this is a Taskmaster tagged format
     if (
       fileData[tag] ||
-      Object.keys(fileData).some((key) => typeof fileData[key] === 'object' && fileData[key].tasks)
+      Object.keys(fileData).some(
+        (key) =>
+          typeof fileData[key] === 'object' &&
+          fileData[key] !== null &&
+          (fileData[key] as Record<string, unknown>).tasks
+      )
     ) {
       // Maintain tagged format
       if (!fileData[tag]) {
         fileData[tag] = {};
       }
 
-      fileData[tag].tasks = data.tasks;
-      fileData[tag].metadata = {
-        ...fileData[tag].metadata,
+      (fileData[tag] as Record<string, unknown>).tasks = data.tasks;
+      const tagData = fileData[tag] as Record<string, unknown>;
+      tagData.metadata = {
+        ...(typeof tagData.metadata === 'object' && tagData.metadata !== null
+          ? tagData.metadata
+          : {}),
         lastModified: new Date().toISOString(),
         version: '1.0.0',
       };

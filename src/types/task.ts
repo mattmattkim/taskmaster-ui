@@ -38,6 +38,6 @@ export interface TasksData {
   metadata?: {
     version: string;
     lastModified: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
